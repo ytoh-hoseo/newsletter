@@ -56,8 +56,14 @@ def generate_newsletter(content_file, template_file, output_file):
 
 
 if __name__ == "__main__":
+    import sys
+
+    content_file = sys.argv[1] if len(sys.argv) > 1 else "contents/content.md"
+    template_file = sys.argv[2] if len(sys.argv) > 2 else "template.html"
+    output_file = sys.argv[3] if len(sys.argv) > 3 else "output/newsletter.html"
+
     generate_newsletter(
-        content_file="content.md",
-        template_file="template.html",
-        output_file="output/newsletter.html",
+        content_file=content_file,
+        template_file=template_file,
+        output_file=output_file,
     )

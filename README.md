@@ -19,15 +19,19 @@ Markdown으로 작성한 뉴스레터 내용을 세련된 HTML 이메일 형식�
 ```bash
 make init
 # 또는
-pip install jinja2 markdown2
+pip install -r requirements.txt
 ```
 
 ### 2. 콘텐츠 작성
 
-`content.md` 파일을 수정하여 뉴스레터 내용을 작성합니다.
+`contents/` 디렉토리에 `content-YYYYMM.md` 형식으로 월별 뉴스레터 내용을 작성하고, 빌드 시 참조되는 `contents/content.md` 심볼릭 링크가 현재 발행할 파일을 가리키도록 갱신합니다.
+
+```bash
+ln -sf content-202609.md contents/content.md
+```
 
 ```markdown
-# 2025년 12월 뉴스레터
+# 2026년 9월 뉴스레터
 
 ## 📢 학과 소식
 - 새로운 소식 1
@@ -42,7 +46,7 @@ pip install jinja2 markdown2
 ```bash
 make
 # 또는
-python3 newsletter.py
+python3 newsletter.py contents/content.md template.html output/newsletter.html
 ```
 
 ### 4. 미리보기
@@ -51,19 +55,24 @@ python3 newsletter.py
 make preview
 ```
 
-생성된 파일은 `output/newsletter.html`에 저장됩니다.
+`make`로 생성한 파일은 `output/newsletter_YYYYMMDD.html`(오늘 날짜)에 저장됩니다. `python3 newsletter.py`를 인자 없이 직접 실행하면 `output/newsletter.html`에 저장됩니다.
 
 ## 📁 프로젝트 구조
 
 ```
 newsletter/
 ├── README.md              # 프로젝트 설명서
-├── Makefile              # 빌드 자동화
-├── newsletter.py         # 메인 스크립트
-├── template.html         # HTML 템플릿
-├── content.md           # 뉴스레터 내용 (편집 필요)
-└── output/              # 생성된 HTML 파일
-    └── newsletter.html
+├── Makefile               # 빌드 자동화
+├── newsletter.py          # 메인 스크립트
+├── template.html          # HTML 템플릿
+├── requirements.txt       # Python 의존성
+├── contents/               # 뉴스레터 내용
+│   ├── content-202512.md
+│   ├── content-202606.md
+│   ├── content-202609.md
+│   └── content.md         # 현재 발행본을 가리키는 심볼릭 링크
+└── output/                # 생성된 HTML 파일
+    └── newsletter_YYYYMMDD.html
 ```
 
 ## 🛠️ Makefile 명령어
@@ -72,8 +81,9 @@ newsletter/
 |--------|------|
 | `make` | 뉴스레터 HTML 생성 |
 | `make preview` | 생성 후 브라우저로 바로 열기 |
+| `make archive` | `archive/` 폴더로 복사 |
 | `make clean` | 생성된 파일 삭제 |
-| `make install` | Python 패키지 설치 |
+| `make init` | Python 패키지 설치 |
 | `make help` | 도움말 보기 |
 
 ## ✏️ 콘텐츠 작성 가이드
@@ -133,14 +143,14 @@ background: linear-gradient(135deg, #5E72EB 0%, #8B5CF6 100%);
 
 ### Outlook 사용
 
-1. `output/newsletter.html` 파일을 브라우저로 열기
+1. `make preview`로 생성된 `output/newsletter_YYYYMMDD.html` 파일을 브라우저로 열기
 2. 전체 선택 (Ctrl+A / Cmd+A)
 3. 복사 (Ctrl+C / Cmd+C)
 4. Outlook 새 메일에 붙여넣기 (Ctrl+V / Cmd+V)
 
 ### Gmail 사용
 
-1. 브라우저로 `output/newsletter.html` 열기
+1. 브라우저로 `output/newsletter_YYYYMMDD.html` 열기
 2. 전체 선택 후 복사
 3. Gmail 새 메일 작성에 붙여넣기
 
@@ -151,8 +161,8 @@ import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
-# newsletter.html 내용 읽기
-with open('output/newsletter.html', 'r', encoding='utf-8') as f:
+# 생성된 뉴스레터 HTML 내용 읽기 (파일명은 실제 생성 날짜에 맞게 수정)
+with open('output/newsletter_20260916.html', 'r', encoding='utf-8') as f:
     html_content = f.read()
 
 # 이메일 구성
