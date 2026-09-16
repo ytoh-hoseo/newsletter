@@ -5,6 +5,7 @@ from jinja2 import Template
 import markdown2
 from pathlib import Path
 from datetime import datetime
+from premailer import transform
 
 
 def generate_newsletter(content_file, template_file, output_file):
@@ -36,6 +37,11 @@ def generate_newsletter(content_file, template_file, output_file):
         title="호서대학교 게임소프트웨어학과 뉴스레터",
         content=html_content,
         date=datetime.now().strftime("%Y년 %m월 %d일"),
+    )
+
+    # 메일에 복사해도 서식이 유지되도록 CSS를 각 요소에 직접 적용
+    final_html = transform(
+        final_html, allow_network=False, include_star_selectors=True
     )
 
     # 결과 저장
